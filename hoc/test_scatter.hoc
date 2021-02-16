@@ -1,0 +1,35 @@
+objref pc, svec, dvec_i, dvec_d
+
+pc = new ParallelContext()
+
+id_root = 0
+sendnum = 10
+
+svec = new Vector()
+if( pc.id == id_root ) {
+	svec.indgen(0, (pc.nhost*sendnum-1)*0.1, 1*0.1)
+	{ printf("I'm a root of MPI_Scatter! (rank %d)\n", id_root) }
+	svec.printf()
+}
+dvec_d = new Vector()
+dvec_i = new Vector()
+
+{pc.scatter_d(svec, dvec_d, sendnum, id_root)}
+{pc.scatter_i(svec, dvec_i, sendnum, id_root)}
+
+for(n = 0; n < pc.nhost; n+=1) {
+	pc.barrier()
+	if(pc.id == n) { 
+		{ printf("I'm %d, and have vector: \n( ", pc.id) }
+		for(i = 0; i < dvec_d.size(); i+=1) {
+			{ printf("%f, ", dvec_d.x(i)) }
+		}
+		{ printf(" )\n( ") }
+		for(i = 0; i < dvec_i.size(); i+=1) {
+			{ printf("%d, ", int(dvec_i.x(i))) }
+		}
+		{ printf(" )\n") }
+	}
+}
+{pc.done()}
+

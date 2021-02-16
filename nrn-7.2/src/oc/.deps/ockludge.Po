@@ -1,0 +1,13 @@
+ockludge.o: ockludge.c \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre \
+  ./../../nrnconf.h \
+  ./nrnmpi.h \
+  ./nrnmpiuse.h
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre:
+
+./../../nrnconf.h:
+
+./nrnmpi.h:
+
+./nrnmpiuse.h:

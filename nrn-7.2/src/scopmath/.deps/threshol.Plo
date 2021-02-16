@@ -1,0 +1,58 @@
+threshol.lo: threshol.c \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre \
+  ./../../nrnconf.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/ctype.h \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../include/features.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/features.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/stdc-predef.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/sys/cdefs.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/wordsize.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/long-double.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs-lp64.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/types.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/typesizes.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/endian.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/endian.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/byteswap.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/uintn-identity.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/types/locale_t.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/types/__locale_t.h
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre:
+
+./../../nrnconf.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/ctype.h:
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../include/features.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/features.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/stdc-predef.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/sys/cdefs.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/wordsize.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/long-double.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs-lp64.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/types.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/typesizes.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/endian.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/endian.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/byteswap.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/uintn-identity.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/types/locale_t.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/types/__locale_t.h:

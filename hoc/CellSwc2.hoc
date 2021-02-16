@@ -1,0 +1,656 @@
+// edited 2013/05/07 yusuke mori
+
+{load_file("stdlib.hoc")}
+
+begintemplate CellSwc
+public init, shape, translation, subsets, geom, biophys, geom_nseg, biophys_inhomo, makeSyn, makeNetCon
+public Scalex, ScaleY, ScaleZ, Shrinkagex, Shrinkagey, Shrinkagez
+public all, secInput, secOutput
+public synlist
+public dend, SectionNum
+
+
+// Public Functions
+public connect2target
+// for record
+public setSpikeRecord, setMultiSpikeRecord, fprintSpikeRecord, fprintMultiSpikeRecord
+// for input stimulus
+public setIClamp, setIClampTwoType
+
+// will be re-created in shape()
+create dend[2]
+
+//------------------------------------------------------------------------------
+// swc header informations
+//------------------------------------------------------------------------------
+strdef HeaderOriginalSource
+strdef HeaderCreature
+strdef HeaderRegion
+strdef HeaderFieldLayer
+strdef HeaderType
+strdef HeaderContributor
+strdef HeaderReference
+strdef HeaderRaw
+strdef HeaderExtras
+strdef HeaderSomaArea
+strdef HeaderShrinkageCorrection
+strdef HeaderVersionNumber
+strdef HeaderVersionDate
+strdef HeaderScale
+ScaleX = ScaleY = ScaleZ = 1.000000
+Shrinkagex = Shrinkagey = Shrinkagez = 1
+SectionNum = 1
+
+//------------------------------------------------------------------------------
+// Section lists
+//------------------------------------------------------------------------------
+objref all, secInput, secOutput
+
+//------------------------------------------------------------------------------
+// synaptic points
+//------------------------------------------------------------------------------
+objref synlist
+objref SynNo
+
+//------------------------------------------------------------------------------
+// geometry
+//------------------------------------------------------------------------------
+tranlationX = translationY = translationZ = 0
+
+//------------------------------------------------------------------------------
+// procedures / functions interface
+//------------------------------------------------------------------------------
+// proc init()
+// proc shape()
+// proc translation()
+// proc subsets()
+// proc geom()
+// proc biophys()
+// proc geom_nseg()
+// proc biophys_inhomo()
+// obfunc makeSyn()
+// obfunc makeNetCon
+
+//
+objref this
+proc init() {
+	synlist = new List()
+	SynNo = new Vector()
+	
+	all = new SectionList()
+	secInput = new SectionList()
+	secOutput = new SectionList()
+
+	shape($s1)
+//	subsets()
+//	geom()
+	biophys()
+	geom_nseg()
+}
+proc shape() { localobj strFunc, fobj strdef str, strName, strValue, strTemp
+	fobj = new File()
+	{fobj.ropen($s1)}
+	strFunc = new StringFunctions()
+
+	//--------------------------------------------------------------------------
+	// load header information
+	//--------------------------------------------------------------------------
+	scale_ck = 0
+	curLine = 0
+	dataLineOverHead = 0
+	while (!fobj.eof()) {
+		fobj.gets(str)
+		strFunc.head(str, " ", strName)
+		strFunc.tail(strName, "#", strName)
+		strFunc.tail(str, " ", strValue)
+		strFunc.head(strValue, "\n", strValue)
+		
+		strFunc.head(str, "[^#]", strTemp)
+		if (0 != strcmp("#", strTemp)) {
+			dataLineOverHead = curLine
+			break
+		}
+		
+		if (!strcmp(strName, "ORIGINAL_SOURCE")) {
+			HeaderOriginalSource = strValue
+		}
+		if (!strcmp(strName, "CREATURE")) {
+			HeaderCreature = strValue
+		}
+		if (!strcmp(strName, "REGION")) {
+			HeaderRegion = strValue
+		}
+		if (!strcmp(strName, "FIELD/LAYER")) {
+			HeaderFieldLayer = strValue
+		}
+		if (!strcmp(strName, "TYPE")) {
+			HeaderType = strValue
+		}
+		if (!strcmp(strName, "CONTRIBUTOR")) {
+			HeaderContributor = strValue
+		}
+		if (!strcmp(strName, "REFERENCE")) {
+			HeaderReference = strValue
+		}
+		if (!strcmp(strName, "RAW")) {
+			HeaderRaw = strValue
+		}
+		if (!strcmp(strName, "EXTRAS")) {
+			HeaderExtras = strValue
+		}
+		if (!strcmp(strName, "SOMA_AREA")) {
+			HeaderSomaArea = strValue
+		}
+		if (!strcmp(strName, "SHRINKAGE_CORRECTION")) {
+			HeaderShrinkageCorrection = strValue
+			sscanf(HeaderShrinkageCorrection, "%f %f %f", &ShrinkageX, &ShrinkageY, &ShrinkageZ)
+		}
+		if (!strcmp(strName, "VERSION_NUMBER")) {
+			HeaderVersionNumber = strValue
+		}
+		if (!strcmp(strName, "VERSION_DATE")) {
+			HeaderVersionDate = strValue
+		}
+		if (!strcmp(strName, "SCALE")) {
+		        scale_ck = 1
+			HeaderScale = strValue
+			sscanf(HeaderScale, "%f %f %f", &ScaleX, &ScaleY, &ScaleZ)
+			// printf("Scale (%f, %f, %f)\n", ScaleX, ScaleY, ScaleZ)
+		}
+		
+		curLine += 1
+	}
+
+	if (scale_ck == 0) {
+	   ScaleX = 1.000000   
+	   ScaleY = 1.000000   
+	   ScaleZ = 1.000000   
+	}
+	   
+	
+	SectionNum = 0
+	while (!fobj.eof()) {
+		SectionNum = int(fobj.scanvar()-1)
+		for i = 2, 7 {
+			fobj.scanvar()
+		}
+	}
+	
+	{fobj.close()}
+// debuging info        
+//        print"curline, sec-num, dataLineOverHead",curLine,SectionNum,dataLineOverHead
+	{fobj.ropen($s1)}
+	
+	curLine = 0
+	while (curLine < dataLineOverHead) {
+		fobj.gets(strTemp)
+		curLine += 1
+	}
+	
+	//--------------------------------------------------------------------------------
+	// create multi-compartment model
+	//---------------------------------------------------------------------------------
+	create dend[SectionNum]
+print "SectionNum " ,SectionNum
+	forall { insert region }
+
+	// root node
+	rootNo = fobj.scanvar() -2
+	type_root = fobj.scanvar()
+	x_root = fobj.scanvar()
+	y_root = fobj.scanvar()
+	z_root = fobj.scanvar()
+	d_root = fobj.scanvar()
+	parentNo_root = fobj.scanvar() -2 
+//	print "rootNo x_root y_root z_root d_root", rootNo,x_root,y_root,z_root,d_root
+	
+	while (1) { // while current node's connected to the root node
+		curNo = fobj.scanvar() -2
+		type = fobj.scanvar()
+		x = fobj.scanvar()
+		y = fobj.scanvar()
+		z = fobj.scanvar()
+		d = fobj.scanvar()
+// check 1st and 2nd dend
+//		print "curNo x y z d ",curNo,x,y,z,d
+                parentNo = fobj.scanvar()-2 
+		if (parentNo != rootNo) { break }
+		dend[curNo] {
+			pt3dclear()
+			pt3dadd(x_root * ScaleX, y_root * ScaleY, z_root * ScaleZ, d_root)
+			pt3dadd(x * ScaleX, y * ScaleY, z * ScaleZ, d)
+			type_region = type
+		}
+	}
+
+	dend[parentNo] {
+		parentX = x3d(1)
+		parentY = y3d(1)
+		parentZ = z3d(1)
+		parentDiam = diam3d(1)
+	}
+	dend[curNo] {
+		pt3dclear()
+		pt3dadd(parentX, parentY, parentZ, parentDiam)
+		pt3dadd(x * ScaleX, y * ScaleY, z * ScaleZ, d)		
+		type_region = type
+	}
+//	print curNo,parentNo
+	connect dend[curNo](0), dend[parentNo](1)
+	while (!fobj.eof()) {
+		curNo = fobj.scanvar() - 2
+		type = 	fobj.scanvar()
+		x = fobj.scanvar()
+		y = fobj.scanvar()
+		z = fobj.scanvar()
+		d = fobj.scanvar()
+		parentNo = fobj.scanvar() - 2
+	//	print "curNo x y z d ",curNo,x,y,z,d
+		dend[parentNo] {
+			parentX = x3d(1)
+			parentY = y3d(1)
+			parentZ = z3d(1)
+			parentDiam = diam3d(1)
+		}
+		dend[curNo] {
+			pt3dclear()
+			pt3dadd(parentX, parentY, parentZ, parentDiam)
+			pt3dadd(x * ScaleX, y * ScaleY, z * ScaleZ, d)
+			type_region = type
+//check dend
+//                        print "dend-xyzd",x,y,z,d
+		}
+		connect dend[curNo](0), dend[parentNo](1)
+	}
+	
+	{fobj.close()}
+//forall{print "x, dim ", x3d(0), dim3d(0)
+//      }
+	print "load : ", $s1, " ok"
+} // shape()
+
+proc translation() {
+	translationX = $1
+	translationY = $2
+	translationZ = $3
+	forall {
+		x0 = x3d(0)
+		y0 = y3d(0)
+		z0 = z3d(0)
+		diam0 = diam3d(0)
+		x1 = x3d(1)
+		y1 = y3d(1)
+		z1 = z3d(1)
+		diam1 = diam3d(1)
+		pt3dclear()
+		pt3dadd(translationX + x0, translationY + y0, translationZ + z0, diam0)
+		pt3dadd(translationX + x1, translationY + y1, translationZ + z1, diam1)
+	}
+}
+
+proc subsets() {
+	dend[0] all.wholetree()
+}
+
+proc geom() {
+}
+
+proc biophys() {
+ forall {
+ 	Ra = 50
+ 	cm = 2
+        insert hh_k
+ }
+}
+
+external lambda_f
+proc geom_nseg() {
+//forall {nseg=10} //for debug
+forall { 
+//130618 trap for low L
+if (diam < 0.01) {print "L and lambda ,secname,diam",L, Ra, secname(),diam}
+if (L < 1e-4) {nseg=1 
+               continue
+              }
+
+//nsegtmpo = ((L / (0.1 * lambda_f(100)+0.0001) + .9) / 2) * 2 
+//print "check",nsegtmpo,secname()
+nseg = int((L / (0.1 * lambda_f(100.0)+0.001) + .9) / 2) * 2 + 1 }
+}
+
+proc biophys_inhomo() {}
+
+objref syn_
+obfunc makeSyn() { local targetno localobj r
+	// args : targetSectionNo, tau1, tau2, e
+	for i = 0, SynNo.size-1 {
+		if ($1 == SynNo.x[i]) return synlist.object(i)
+	}
+	if ($1 == -1) {
+		r = new Random()
+		r.uniform(0, SectionNum-1)
+		targetno = int(r.repick())
+	} else {
+		targetno = $1
+	}
+	SynNo.append(targetno)
+	dend[targetno] syn_ = new Exp2Syn_k(0.5) synlist.append(syn_)
+	syn_.tau1 = $2
+	syn_.tau2 = $3
+	syn_.e = $4
+	return syn_
+}
+
+obfunc makeNetCon() { local targetno localobj nc, r
+	// args : sourceSectionNo, targetSyn, threshold, delay, weight
+	if ($1 == -1) {
+		r = new Random()
+		r.uniform(0, SectionNum)
+		targetno = int(r.repick())
+	} else {
+		targetno = $1
+	}
+	// NetCon(source, target, threshold, delay, weight)
+	dend[targetno] nc = new NetCon(&v(0.5), $o2, $3, $4, $5)
+	return nc
+}
+
+obfunc connect2target(){local pre_comp,point localobj nc,target
+    if(numarg() == 2){
+    pre_comp = $1
+    target   = $o2
+
+    print pre_comp
+
+    dend[pre_comp] nc = new NetCon(&v(0.5),target)
+    }else if(numarg() == 3){
+    pre_comp = $1
+    target   = $o2
+    point    = $3
+
+    print pre_comp
+
+    dend[pre_comp] nc = new NetCon(&v(point),target)
+    }
+    nc.threshold = 1
+    //print "nc.weight ",nc.weight
+    //this.dend[pre_comp]{psection()}
+    return nc
+}
+
+objref ncSR// netcon for Spike Record
+objref tvecSR, tvecSR_var, idvecSR //tvecSR time vector for Spike Record
+objref compartments
+
+
+proc setSpikeRecord(){local cmpt localobj nil
+    cmpt = $1
+    tvecSR = new Vector()
+    idvecSR = new Vector()
+    ncSR = connect2target(cmpt,nil)
+
+    ncSR.record(tvecSR)
+}
+
+proc setMultiSpikeRecord(){local cmpt localobj nil
+    compartments = new Vector(4)
+    compartments.x(0) = $1
+    compartments.x(1) = $2
+    compartments.x(2) = $3
+    compartments.x(3) = $4
+
+    tvecSR = new List()
+
+    for(j = 0; j<compartments.size();j+=1){
+        tvecSR_var = new Vector()
+        ncSR = connect2target(compartments.x(j),nil) //compartments.x(0), nil)
+        ncSR.record(tvecSR_var)
+        tvecSR.append(tvecSR_var)
+    }
+}
+
+objref tvecL, cmptL, ncL
+objref fileSR
+proc fprintSpikeRecord(){local i, interval, tstop, delay
+    strdef filename, fprint_dir
+    fprint_dir = $s1
+    interval = $2
+    tstop = $3
+    delay = 0.0
+    fileSR = new File()
+    sprint(filename,"%sSpike.dat",fprint_dir)
+    fileSR.wopen(filename)
+    fileSR.printf("$ Stimulation Interval(ms): %d\n",interval)
+    fileSR.printf("$ Delay(ms): %f\n",delay)
+    print "tvecSR  ",tvecSR.size()
+    fileSR.printf("$ Number of data : %d\n",tvecSR.size())
+    fileSR.printf("$ TSTOP : %d\n",tstop)
+    tvecSR.printf(fileSR,"%5.5f\n")
+    fileSR.close()
+}
+
+proc fprintMultiSpikeRecord(){local i, interval, tstop, delay localobj mt
+    strdef filename, fprint_dir
+    fprint_dir = $s1
+    interval = $2
+    tstop = $3
+    delay = 0.0
+    mt = new Matrix()
+    fileSR = new File()
+    num_lines = getNumLines()
+
+    mt.resize(num_lines, 4)
+    for(j = 0; j<tvecSR.count();j+=1){
+        mt.setcol(j, tvecSR.o(j))
+    }
+
+    sprint(filename,"%sSpike.dat",fprint_dir)
+    fileSR.wopen(filename)
+    fileSR.printf("$ Stimulation Interval(ms): %d\n",interval)
+    fileSR.printf("$ Delay(ms): %f\n",delay)
+    print "tvecSR  ",num_lines
+    fileSR.printf("$ Number of data : %d\n",num_lines)
+    fileSR.printf("$ TSTOP : %d\n",tstop)
+    fileSR.printf("$ compartment: %d %d %d %d\n", compartments.x(0), compartments.x(1), compartments.x(2), compartments.x(3))
+    mt.fprint(fileSR,"%5.5f\t")
+    fileSR.close()
+}
+
+
+objref ic
+objref stim_vec, tvec, stim_flg, spiketiming1, spiketiming2
+proc setIClamp(){local stoptime, timestep, i, j, numStim, num_spike1, num_spike2, flg, start_time, length, amp, L_RATIO,A_RATIO  localobj rand, datafile1, datafile2 //flg: flag
+    strdef filename1
+
+    stoptime = $1
+    timestep = $2
+    filename1 = $s3
+    span = stoptime/timestep
+
+    this.dend[0] ic = new IClamp(1.0)
+    ic.del = 0
+    ic.dur = 1e9
+    L_RATIO = 2.0
+    A_RATIO = 0.3
+    amp = 15
+    length = 0.5
+
+    tvec = new Vector(span)
+    stim_flg = new Vector(span,0)
+    spiketiming1 = new Vector()
+    datafile1 = new File()
+    stim_vec = new Vector(span,0)
+    for i=0,span -1 {
+        tvec.x[i] = timestep * i
+    }
+
+    datafile1.ropen(filename1)
+
+    while(!datafile1.eof()){
+        var = datafile1.scanvar() / 5.0
+        spiketiming1.append(var)
+    }
+    spiketiming1.remove(spiketiming1.size()-1)
+    num_spike1 = spiketiming1.size()
+    datafile1.close()
+
+    numStim=1
+    j=0
+    for j = 0, num_spike1-1 { // refactored by Sakai 20190113
+        i = int(spiketiming1.x[j]*1000/dt) - int(500/dt) /5.0 +  1
+	if(i%5 != 0){continue}
+
+	if(i <= 0){ continue }
+        if(i >= 500/dt){ break }
+        if(i >= span){ break }
+        stim_flg.set(i,1)
+	
+	for numStim=1, int(stoptime/1000)-1{
+	if(i+1000*numStim/dt  >= span){ continue }
+        stim_flg.set(i+1000*numStim/dt,1)
+	}
+    }
+
+    flg = 0
+    for i=0, span-1{
+        if(stim_flg.x[i]==1){
+            stim_on = 1
+        }
+        if(stim_on == 1){
+            if(flg == 0){
+                start_time = tvec.x[i]
+                flg = 1
+            }
+            if(tvec.get(i) == start_time){
+                stim_vec.set(i,0)
+            }else if((tvec.get(i)-start_time)<=0){
+                stim_vec.set(i,-amp)
+            }else if((tvec.get(i)-start_time)<=length){
+                stim_vec.set(i,amp)
+            }else if((tvec.get(i)-start_time)<=L_RATIO*length){
+                stim_vec.set(i,-amp*A_RATIO)
+            }else{
+                stim_vec.set(i,0)
+                stim_on = 0
+                flg = 0
+            }
+        }
+    }
+    stim_vec.play(&ic.amp, tvec, 1)
+}
+
+
+objref ic
+objref stim_vec, tvec, stim_flg, spiketiming1, spiketiming2
+proc setIClampTwoType(){local stoptime, timestep, i, j, numStim, num_spike1, num_spike2, flg, start_time, length, amp, L_RATIO,A_RATIO  localobj rand, datafile1, datafile2 //flg: flag
+    strdef filename1
+    strdef filename2
+
+    stoptime = $1
+    timestep = $2
+    filename1 = $s3
+    filename2 = $s4
+    span = stoptime/timestep
+
+    this.dend[0] ic = new IClamp(1.0)
+    ic.del = 0
+    ic.dur = 1e9
+    L_RATIO = 2.0
+    A_RATIO = 0.3
+    amp = 15
+    length = 0.5
+
+    tvec = new Vector(span)
+    stim_flg = new Vector(span,0)
+    spiketiming1 = new Vector()
+    spiketiming2 = new Vector()
+    datafile1 = new File()
+    datafile2 = new File()
+    stim_vec = new Vector(span,0)
+    for i=0,span -1 {
+        tvec.x[i] = timestep * i
+    }
+
+    datafile1.ropen(filename1)
+
+    while(!datafile1.eof()){
+        var = datafile1.scanvar() / 5.0
+        spiketiming1.append(var)
+    }
+    spiketiming1.remove(spiketiming1.size()-1)
+    num_spike1 = spiketiming1.size()
+    datafile1.close()
+
+    datafile2.ropen(filename2)
+    while(!datafile2.eof()){
+        var = datafile2.scanvar() / 5.0
+        spiketiming2.append(var)
+    }
+    spiketiming2.remove(spiketiming2.size()-1)
+    num_spike2 = spiketiming2.size()
+    datafile2.close()
+
+    numStim=1
+    j=0
+    for j = 0, num_spike1-1 { // refactored by Sakai 20190113
+        i = int(spiketiming1.x[j]*1000/dt) - int(500/dt) /5.0 +  1
+	if(i%5 != 0){continue}
+
+	if(i <= 0){ continue }
+        if(i >= 500/dt){ break }
+        if(i >= span){ break }
+        stim_flg.set(i,1)
+	
+	for numStim=1, int(stoptime/1000)-1{
+	if(i+1000*numStim/dt  >= span){ continue }
+        stim_flg.set(i+1000*numStim/dt,1)
+	}
+    }
+
+    numStim=1
+    j=0
+    for j = 0, num_spike2-1 { // refactored by Sakai 20190113
+        i = int(spiketiming2.x[j]*1000/dt) - int(500/dt) /5.0 + 1
+	if(i%5 != 0){continue}
+
+	if(i <= 0){ continue }
+        if(i >= 500/dt){ break }
+        if(i+500/dt >= span){ break }
+        stim_flg.set(i+500/dt,1)
+
+	for numStim=1, int(stoptime/1000)-1{
+	if(i+1000*numStim/dt + 500/dt  >= span){ continue }
+        stim_flg.set(i+1000*numStim/dt + 500/dt,1)
+	}
+    }
+
+
+    flg = 0
+    for i=0, span-1{
+        if(stim_flg.x[i]==1){
+            stim_on = 1
+        }
+        if(stim_on == 1){
+            if(flg == 0){
+                start_time = tvec.x[i]
+                flg = 1
+            }
+            if(tvec.get(i) == start_time){
+                stim_vec.set(i,0)
+            }else if((tvec.get(i)-start_time)<=0){
+                stim_vec.set(i,-amp)
+            }else if((tvec.get(i)-start_time)<=length){
+                stim_vec.set(i,amp)
+            }else if((tvec.get(i)-start_time)<=L_RATIO*length){
+                stim_vec.set(i,-amp*A_RATIO)
+            }else{
+                stim_vec.set(i,0)
+                stim_on = 0
+                flg = 0
+            }
+        }
+    }
+    stim_vec.play(&ic.amp, tvec, 1)
+}
+
+endtemplate CellSwc

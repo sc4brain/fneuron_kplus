@@ -1,0 +1,13 @@
+nocable.o: nocable.c \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre \
+  ./../../nrnconf.h \
+  ./nrnrtuse.h \
+  nrnmpiuse.h
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre:
+
+./../../nrnconf.h:
+
+./nrnrtuse.h:
+
+nrnmpiuse.h:

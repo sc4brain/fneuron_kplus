@@ -1,0 +1,3 @@
+hoc/*.sh*
+hoc/*.txt
+specials/sparc64/*

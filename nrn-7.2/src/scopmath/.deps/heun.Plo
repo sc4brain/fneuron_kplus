@@ -1,0 +1,10 @@
+heun.lo: heun.c \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre \
+  ./../../nrnconf.h \
+  errcodes.h
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre:
+
+./../../nrnconf.h:
+
+errcodes.h:

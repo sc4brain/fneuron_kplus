@@ -1,0 +1,3 @@
+	1 
+nspike 48807 [9121] NC = 18, SYN = 8, tmp_pre = 10, tmp_post = 7
+[9121] nsendmax=11 nsend=110 nrecv=1908914 nrecv_useful=70

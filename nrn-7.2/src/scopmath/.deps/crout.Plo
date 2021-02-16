@@ -1,0 +1,79 @@
+crout.lo: crout.c \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre \
+  ./../../nrnconf.h \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../include/math.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/math.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/libc-header-start.h \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../include/features.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/features.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/stdc-predef.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/sys/cdefs.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/wordsize.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/long-double.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs-lp64.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/types.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/typesizes.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/math-vector.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/libm-simd-decl-stubs.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/floatn.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/floatn-common.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/flt-eval-method.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/fp-logb.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/fp-fast.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/mathcalls-helper-functions.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/mathcalls.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/mathinline.h \
+  errcodes.h
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre:
+
+./../../nrnconf.h:
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../include/math.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/math.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/libc-header-start.h:
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../include/features.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/features.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/stdc-predef.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/sys/cdefs.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/wordsize.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/long-double.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs-lp64.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/types.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/typesizes.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/math-vector.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/libm-simd-decl-stubs.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/floatn.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/floatn-common.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/flt-eval-method.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/fp-logb.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/fp-fast.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/mathcalls-helper-functions.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/mathcalls.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/mathinline.h:
+
+errcodes.h:

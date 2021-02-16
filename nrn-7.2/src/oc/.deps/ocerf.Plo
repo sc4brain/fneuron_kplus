@@ -1,0 +1,49 @@
+ocerf.lo: ocerf.c \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre \
+  ./../../nrnconf.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/errno.h \
+  /opt/FJSVxtclanga/tcsds-1.2.28a/bin/../include/features.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/features.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/stdc-predef.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/sys/cdefs.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/wordsize.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/long-double.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs-lp64.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/errno.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/linux/errno.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/asm/errno.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/asm-generic/errno.h \
+  /opt/FJSVxos/devkit/aarch64/rfs/usr/include/asm-generic/errno-base.h
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../lib/fcc.pre:
+
+./../../nrnconf.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/errno.h:
+
+/opt/FJSVxtclanga/tcsds-1.2.28a/bin/../include/features.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/features.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/stdc-predef.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/sys/cdefs.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/wordsize.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/long-double.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/gnu/stubs-lp64.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/bits/errno.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/linux/errno.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/asm/errno.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/asm-generic/errno.h:
+
+/opt/FJSVxos/devkit/aarch64/rfs/usr/include/asm-generic/errno-base.h:

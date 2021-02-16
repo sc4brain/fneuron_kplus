@@ -1,0 +1,166 @@
+load_file("stdlib.hoc")
+begintemplate Cell_Line
+public init, topol, shape, subsets, geom, biophys, geom_nseg, biophys_inhomo
+public synlist, x, y, z, position, makeSyn, makeNetCon
+//connect2target
+public dend
+public all
+public fobj
+public L, diam
+
+dendNum = 3000
+
+create dend[dendNum]
+
+objref synlist
+objref fobj
+
+objref synlist
+//objref synlistno
+objref synlistno
+
+proc init() {
+	//fobj = new File()
+	//fobj.ropen("GIIA_Data.txt")
+	synlist = new List()
+	synlistno = new Vector()
+	x = $1
+	y = $2
+	z = $3
+	topol($4)
+	subsets()
+	geom()
+	biophys()
+	geom_nseg()
+}
+
+
+proc topol() { local from, to, temp
+	print "topol..."
+	shape($1)
+	for i = 0, dendNum {
+		from = i
+		to = i + 1
+		connect dend[from](0), dend[to](1)
+	}
+}
+
+tspine = 0
+proc chkspine() {
+	if($4 < 0) { nspine = nspine + 1 }
+	pt3dadd($1, $2, $3, abs($4))
+}
+
+proc shape() { local i, j, jmax, num
+	num = $1
+	print "define shape"
+	create dend[num]
+	printf("dendNum = %d\n", num)
+	for i = 0, num - 1 {
+		dend[i] {
+			pt3dclear()
+			pt3dadd(i*1, 0, 0, 2)
+			pt3dadd((i+1)*1, 0, 0, 2)
+		}
+	//	print i
+	}
+}
+
+objref all
+proc subsets() { local i
+	objref all
+	all = new SectionList()
+	for i = 0, dendNum - 1 { dend[i] all.append() }
+}
+
+proc geom() {
+	forsec all { }
+}
+
+external lambda_f
+proc geom_nseg() {
+	forsec all { nseg = int((L / (0.1 * lambda_f(100)) + .9) / 2) * 2 + 1 }
+}
+
+proc biophys() {
+	forsec all {
+		Ra = 100
+		cm = 1
+		
+		insert hh
+	}
+}
+
+proc biophys_inhomo() {}
+
+proc position() {
+	for i = 0, fobj.scanvar() - 1 {
+		dend[i] for j = 0, n3d () - 1 {
+			pt3dchange(j, $1 - x + x3d(j), $2 - y + y3d(j), $3 - z + z3d(j), diam3d(j)) }
+		}
+	}
+
+
+objref syn_
+syncount = 0
+
+
+obfunc makeSyn() {local target localobj r
+
+	for i = 0, synlistno.size - 1 {
+		if ($1 == synlistno.x[i]) return synlist.object(i)
+	}
+	if ($1 == -1) {
+ 	   r = new Random()
+ 	     r.uniform(0, dendNum-1)
+ 	     		  targetno = int(r.repick())
+ 			  } else {
+ 			    targetno = $1
+ 			    }
+        synlistno.append(targetno)
+ 	dend[targetno]  syn_ = new Exp2Syn(0.5) synlist.append(syn_)
+	syn_.tau1 = $2
+	syn_.tau2 = $3
+	syn_.e = $4
+	return syn_
+}
+obfunc makeNetCon() { localobj nc
+	print $1
+	dend[$1] nc = new NetCon(&v(0.5), $o2, $3, $4, $5)
+	return nc
+}
+
+
+
+///unused
+//proc position() {
+//	for i = 0, fobj.scanvar() - 1 {
+//	dend[i] for j = 0, n3d() - 1 {
+//		pt3dchange(j, $1 - x + x3d(j), $2 - y + y3d(j), $3 - z + z3d(j), diam3d(j)) }
+//	}
+//}
+
+/*
+obfunc connect2target() { localobj nc //$o1 target point process, optional $o2 returned NetCon
+	dend[dendNum / 10] nc = new NetCon(&v(1), $o1)
+	nc.threshold = 0
+	nc.delay = 0
+	
+	if (numarg () == 2) { $o2 = nc }
+	return nc
+	
+}
+
+
+objref syn_
+proc synapses() { local sfx
+	sfx = dendNum / 10
+	dend[sfx] syn_ = new ExpSyn(0.8) synlist.append(syn_)
+	syn_.tau = 2
+	syn_.e = 0
+}
+
+func is_art() { return 0 }
+*/
+endtemplate Cell_Line
+

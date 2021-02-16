@@ -1,0 +1,7 @@
+#define NRN_MAJOR_VERSION "7"
+#define NRN_MINOR_VERSION "3"
+#define HG_DATE "2014-04-04"
+#define HG_BRANCH "ansi"
+#define HG_CHANGESET "2b0c984183df"
+#define HG_LOCAL "1078"
+#define HG_TAG ""

@@ -1,0 +1,90 @@
+//{chdir("./hoc/bench")}
+
+{load_file("nrngui.hoc")}
+
+if (!name_declared("MODEL")) { MODEL=0 }
+if (!name_declared("NCELLS")) { NCELLS=1 }
+if (!name_declared("STOPTIME")) { STOPTIME=100 }
+
+
+// cells
+create cells[10000]
+
+
+//objref pc
+objref cvode
+objref tvec, idvec
+
+
+// $1 : cell id for stimulate
+/*
+proc mkstim() { local i, num_stim_pos, stim_cell, num_cell, num_stim
+    num_cell = $1
+    num_stim_pos = $2
+    num_stim = $3
+    ncstimlist = new List()
+    stimlist = new List()
+
+    for(i=0; i<num_stim; i=i+1){
+	stim_cell = i * (num_cell/(num_stim+1))
+	if(pc.gid_exists(stim_cell)){
+		//printf("[makestim:%d] CELL %d\n", pc.id, stim_cell)
+	    stim = new NetStim()
+	    stim.number = 10
+	    stim.start = 2
+	    stim.interval = 50
+	    
+	    ncstim = new NetCon(stim, pc.gid2cell(stim_cell).synlist.object(0))
+	    ncstim.delay = 1
+	    ncstim.weight = 0.1
+	    
+	    stimlist.append(stim)
+	    ncstimlist.append(ncstim)
+	}
+    }
+}
+*/
+
+
+// start main
+{
+    cvode = new CVode()
+
+    printf("\nCondition : \n")
+    //printf(" * Process=%d, Thread=%d\n", pc.nhost, NTHREAD)
+    printf(" * STOPTIME=%f, dt=%f\n", STOPTIME, dt)
+    printf(" * nCELLS=%d\n", NCELLS)
+    printf("\nStart Modeling.\n")
+
+    // mkcells(NCELLS, MODEL)
+    // connectcells(NCELLS, NETWORK, NSYNAPSE, SYNAPSE_RANGE)
+
+
+    // spikerecord()
+    
+    forall { insert hh }
+    cvode.cache_efficient(1)
+    
+    stdinit()
+    
+    printf("Modeling Finished.\n")
+    printf("Calculation Starts\n")
+    
+    //modelfin_time = pc.time
+    //start_waittime = pc.wait_time
+    //pc.psolve(tstop)
+    tstop = 200
+    run()
+
+    printf("Calculation Finished !!\n")
+    //stop_time = pc.time
+    
+    printf("\nRESULT : \n")
+    //printf(" * core time : %f sec\n", stop_time-modelfin_time)
+    
+    //printf("[%d] NC = %d, SYN = %d, tmp_pre = %d, tmp_post = %d\n", pc.id, nclist.count(), synlist.count(), tmp_pre, tmp_post)
+
+    
+}
+
+quit()

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+ARCH=sparc64
+if test "x${NRNHOME}" = x ; then
+        prefix="/home/hp200177/u00688/tsimulation_neuron/exec"
+	exec_prefix=/home/hp200177/u00688/tsimulation_neuron/exec/sparc64
+	NRNBIN=${exec_prefix}/bin/
+	NRNDEMO=/home/hp200177/u00688/tsimulation_neuron/exec/share/nrn/demo/
+else
+        prefix="$NRNHOME"
+	exec_prefix="${prefix}/${ARCH}"
+	NRNBIN="${exec_prefix}/bin/"
+	NRNDEMO="${prefix}/share/nrn/demo/"
+fi
+export NRNDEMO
+
+if [ ! -f "${NRNDEMO}neuron" ] ; then
+	(cd "${NRNDEMO}release" ; "${NRNBIN}nrnivmodl" ; cd .. ; ln -s release/${ARCH}/special neuron)
+fi
+
+"${NRNDEMO}neuron" "${NRNDEMO}demo.hoc" "$@" -

@@ -1,0 +1,34 @@
+objref pc, svec, dvec_i, dvec_d
+
+pc = new ParallelContext()
+
+id_root = 0
+sendnum = 5
+
+svec = new Vector(sendnum)
+for(i = 0; i < svec.size(); i+=1) { svec.x(i) = pc.id + i*0.1 }
+dvec_i = new Vector()
+dvec_d = new Vector()
+
+for(n = 0; n < pc.nhost; n+=1) {
+	pc.barrier()
+	if(pc.id == n) { 
+		{ printf("I'm %d, and have vector: ( ", pc.id) }
+		for(i = 0; i < svec.size(); i+=1) {
+			{ printf("%d, ", int(svec.x(i))) }
+		}
+		{ printf(" )\n") }
+	}
+}
+
+
+{pc.gather_d(svec, dvec_d, sendnum, id_root)}
+{pc.gather_i(svec, dvec_i, sendnum, id_root)}
+
+if( pc.id == id_root ) {
+	{ printf("I'm a root of MPI_Gather! (rank %d)\n", id_root) }
+	{ dvec_d.printf() }
+	{ dvec_i.printf() }
+}
+{pc.done()}
+
