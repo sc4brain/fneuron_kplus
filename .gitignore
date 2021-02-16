@@ -2,3 +2,5 @@ hoc/*.sh*
 hoc/*.txt
 specials/sparc64/*
 9000/*
+k_job/small*
+k_job/single_fapp*
