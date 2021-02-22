@@ -1,8 +1,8 @@
 modified from sc4brain/neuron_kplus
 
-to compile  
+to compile 
+    at first goto nrn-7.2 directory
     $ ../config/do_config_k1.sh
-
     $ make
     $ make install
 
