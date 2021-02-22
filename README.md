@@ -1,6 +1,6 @@
 modified from sc4brain/neuron_kplus
 
-to compile
+to compile  
     $ ../config/do_config_k1.sh
 
     $ make
