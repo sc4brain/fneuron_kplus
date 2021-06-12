@@ -21,7 +21,7 @@ To indroduce perfomance-tuned the ion-dynamics michanism,
 ```
 
 
-To test simulator.
+To test simulator,
 ```
     $ cd hoc
     $ pjsub ../k_job/single_test.sh
